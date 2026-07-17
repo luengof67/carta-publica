@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuestra carta</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
+:root{
+  --papel:#F5F6F2; --tinta:#20291F; --verde:#2F5233; --verde-osc:#243F28;
+  --azafran:#DDA321; --linea:#D8DCD2; --carta:#FFFFFF; --suave:#66705F;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--papel);color:var(--tinta);min-height:100vh;}
+.display{font-family:'Fraunces',Georgia,serif;}
+header{background:var(--verde);color:#fff;padding:26px 20px 22px;text-align:center;}
+header .logo{max-height:70px;max-width:70%;object-fit:contain;margin-bottom:8px;}
+header h1{font-family:'Fraunces',Georgia,serif;font-size:28px;font-weight:700;margin:0;}
+header .sub{font-size:13px;opacity:.85;margin-top:4px;}
+main{max-width:820px;margin:0 auto;padding:16px 18px 50px;}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 0 6px;position:sticky;top:0;background:var(--papel);z-index:5;}
+.tab{border:none;background:transparent;padding:9px 14px;border-radius:999px;font-weight:600;font-size:14px;
+  cursor:pointer;color:var(--suave);white-space:nowrap;font-family:inherit;}
+.tab.activa{background:var(--verde);color:#fff;}
+.buscador{width:100%;border:1.5px solid var(--linea);border-radius:12px;padding:11px 14px;font-size:15px;
+  margin:6px 0 4px;font-family:inherit;outline:none;}
+.buscador:focus{border-color:var(--verde);}
+.aviso-filtro{font-size:13px;color:var(--suave);margin:4px 2px 0;}
+.grupo-sec{margin-top:22px;}
+.grupo-sec h2{font-family:'Fraunces',Georgia,serif;font-size:15px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--verde);text-align:center;margin:0 0 4px;}
+.grupo-sec h2::after{content:"";display:block;width:40px;height:2px;background:var(--azafran);margin:8px auto 14px;}
+.plato{background:var(--carta);border:1px solid var(--linea);border-radius:14px;padding:14px 16px;margin-bottom:10px;
+  display:flex;gap:14px;align-items:flex-start;}
+.plato .foto{width:66px;height:66px;border-radius:10px;object-fit:cover;flex-shrink:0;}
+.plato .cuerpo{flex:1;min-width:0;}
+.plato .fila1{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.plato .nombre{font-family:'Fraunces',Georgia,serif;font-size:18px;font-weight:600;}
+.plato .en{font-size:12.5px;color:var(--suave);font-style:italic;margin-top:1px;}
+.plato .precio{font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:600;color:var(--verde);white-space:nowrap;}
+.plato .desc{font-size:13px;color:var(--suave);margin-top:4px;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:600;padding:2px 9px;
+  border-radius:999px;background:#FBF3DD;border:1px solid #E8D9A8;color:#6B5310;}
+.chip.ok{background:#E9F2E7;border-color:#C4DCC0;color:#2F5233;}
+.filtro-al{margin:8px 0 2px;}
+.filtro-al select{width:100%;border:1.5px solid var(--linea);border-radius:12px;padding:10px 12px;font-size:14px;
+  font-family:inherit;background:#fff;color:var(--tinta);outline:none;}
+.cargando, .vacio{text-align:center;color:var(--suave);padding:50px 20px;}
+.pie{text-align:center;font-size:12px;color:var(--suave);margin-top:30px;padding-top:16px;border-top:1px solid var(--linea);line-height:1.6;}
+.leyenda-final{margin-top:24px;background:#fff;border:1px solid var(--linea);border-radius:12px;padding:14px 16px;}
+.leyenda-final .t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin-bottom:8px;}
+.leyenda-final .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px 12px;font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div id="cabecera">
+    <h1 class="display">Nuestra carta</h1>
+    <div class="sub">Consulta nuestros platos y sus alérgenos</div>
+  </div>
+</header>
+
+<main>
+  <div id="contenido"><div class="cargando">Cargando la carta…</div></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getFirestore, doc, getDoc, onSnapshot, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+/* ── MISMA configuración que la app (solo lectura pública) ── */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBNSmPNSufNRs_pQlcZBzGESSsAhTq5cX4",
+  authDomain: "listadiplatos.firebaseapp.com",
+  projectId: "listadiplatos",
+  storageBucket: "listadiplatos.firebasestorage.app",
+  messagingSenderId: "979755835088",
+  appId: "1:979755835088:web:b411d4efa32170ae72c8d5"
+};
+const CODIGO_EQUIPO = "jose403060";
+
+const SECCIONES = [
+  { id:"menu", nombre:"Menú del día", sub:[
+    {id:"primeros",nombre:"Primeros"},{id:"segundos",nombre:"Segundos"},{id:"postres_menu",nombre:"Postres"}]},
+  { id:"carta", nombre:"Carta", sub:[
+    {id:"entrantes",nombre:"Entrantes"},{id:"carnes",nombre:"Carnes"},{id:"pescados",nombre:"Pescados"},{id:"postres_esp",nombre:"Postres especiales"}]},
+  { id:"tapas", nombre:"Tapas", sub:[
+    {id:"tapas_barra",nombre:"Tapas de barra"},{id:"tapas_esp",nombre:"Tapas especiales"}]},
+  { id:"experiencias", nombre:"Experiencias", sub:[
+    {id:"menus_esp",nombre:"Menús especiales"},{id:"catas",nombre:"Catas maridadas"},{id:"cocteles",nombre:"Cócteles"}]},
+  { id:"cafeteria", nombre:"Cafetería", sub:[
+    {id:"desayunos",nombre:"Desayunos"},{id:"bocadillos",nombre:"Bocadillos"},{id:"raciones",nombre:"Raciones"},{id:"postres_cafe",nombre:"Postres"},{id:"bebidas",nombre:"Bebidas"}]},
+];
+const SUB_A_PRINCIPAL = {}, NOMBRE_SUB = {};
+SECCIONES.forEach(s => s.sub.forEach(sub => { SUB_A_PRINCIPAL[sub.id]=s; NOMBRE_SUB[sub.id]=sub.nombre; }));
+
+const ALERGENOS = [
+  {id:"gluten",nombre:"Gluten",icono:"🌾"},{id:"crustaceos",nombre:"Crustáceos",icono:"🦐"},
+  {id:"huevos",nombre:"Huevos",icono:"🥚"},{id:"pescado",nombre:"Pescado",icono:"🐟"},
+  {id:"cacahuetes",nombre:"Cacahuetes",icono:"🥜"},{id:"soja",nombre:"Soja",icono:"🫘"},
+  {id:"lacteos",nombre:"Lácteos",icono:"🥛"},{id:"frutos_cascara",nombre:"Frutos de cáscara",icono:"🌰"},
+  {id:"apio",nombre:"Apio",icono:"🥬"},{id:"mostaza",nombre:"Mostaza",icono:"🟡"},
+  {id:"sesamo",nombre:"Sésamo",icono:"⚪"},{id:"sulfitos",nombre:"Sulfitos",icono:"🍷"},
+  {id:"altramuces",nombre:"Altramuces",icono:"🫛"},{id:"moluscos",nombre:"Moluscos",icono:"🦪"},
+];
+const AL_MAP = Object.fromEntries(ALERGENOS.map(a => [a.id, a]));
+
+function esc(s){ return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+let platos = [], fotos = {}, seccion = "todas", busqueda = "", filtroAl = "";
+
+const app = initializeApp(FIREBASE_CONFIG);
+const db = getFirestore(app);
+const base = "restaurantes/" + CODIGO_EQUIPO;
+
+/* Cargar platos (en tiempo real) */
+onSnapshot(doc(db, base + "/datos/platos"), snap => {
+  if (snap.exists()){
+    try { platos = JSON.parse(snap.data().json || "[]"); } catch { platos = []; }
+    render();
+  } else { platos = []; render(); }
+}, () => {
+  document.getElementById("contenido").innerHTML = `<div class="vacio">No se pudo cargar la carta en este momento. Inténtalo de nuevo más tarde.</div>`;
+});
+
+/* Cargar fotos y logo/nombre */
+getDocs(collection(db, base + "/fotos")).then(qs => {
+  qs.forEach(d => { const data = d.data()?.data; if (data) fotos[d.id] = data; });
+  render();
+}).catch(()=>{});
+getDoc(doc(db, base + "/config/carta")).then(d => {
+  /* opcional: si algún día guardas nombre/logo del restaurante, se mostrarían aquí */
+}).catch(()=>{});
+
+function seccionesConPlatos(){
+  return SECCIONES.filter(s => platos.some(p => p.publico && SUB_A_PRINCIPAL[p.subseccion]?.id === s.id));
+}
+
+function platosFiltrados(){
+  return platos.filter(p => {
+    if (!p.publico) return false; /* solo los que el restaurante ha marcado como visibles */
+    if (seccion !== "todas" && SUB_A_PRINCIPAL[p.subseccion]?.id !== seccion) return false;
+    if (filtroAl && (p.alergenos||[]).includes(filtroAl)) return false;
+    if (busqueda){
+      const t = (p.nombre + " " + (p.nombreEn||"") + " " + (p.ingredientes||[]).join(" ")).toLowerCase();
+      if (!t.includes(busqueda.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+function chips(p){
+  const al = p.alergenos || [];
+  if (al.length === 0) return `<span class="chip ok">✓ Sin alérgenos declarados</span>`;
+  return al.map(a => AL_MAP[a] ? `<span class="chip">${AL_MAP[a].icono} ${esc(AL_MAP[a].nombre)}</span>` : "").join("");
+}
+
+function render(){
+  const cont = document.getElementById("contenido");
+  const hayPublicos = platos.some(p => p.publico);
+  if (platos.length === 0 || !hayPublicos){
+    cont.innerHTML = `<div class="vacio">La carta se está actualizando. Vuelve en un momento.</div>`;
+    return;
+  }
+  const secs = seccionesConPlatos();
+  const tabs = `<div class="tabs">
+    <button class="tab${seccion==="todas"?" activa":""}" data-sec="todas">Todo</button>
+    ${secs.map(s => `<button class="tab${seccion===s.id?" activa":""}" data-sec="${s.id}">${esc(s.nombre)}</button>`).join("")}
+  </div>`;
+
+  const controles = `
+    <input class="buscador" id="busc" placeholder="🔎 Buscar plato o ingrediente…" value="${esc(busqueda)}">
+    <div class="filtro-al">
+      <select id="filAl">
+        <option value="">Ver todos los platos</option>
+        ${ALERGENOS.map(a => `<option value="${a.id}"${filtroAl===a.id?" selected":""}>Mostrar solo SIN ${esc(a.nombre.toLowerCase())}</option>`).join("")}
+      </select>
+    </div>
+    ${filtroAl ? `<div class="aviso-filtro">Mostrando solo platos <b>sin ${esc(AL_MAP[filtroAl].nombre.toLowerCase())}</b>.</div>` : ""}`;
+
+  const vis = platosFiltrados();
+  const usados = new Set();
+  let cuerpo = "";
+  const secsMostrar = seccion === "todas" ? secs : secs.filter(s => s.id === seccion);
+  secsMostrar.forEach(s => {
+    s.sub.forEach(sub => {
+      const dePlatos = vis.filter(p => p.subseccion === sub.id);
+      if (dePlatos.length === 0) return;
+      cuerpo += `<div class="grupo-sec"><h2>${esc(s.nombre)} · ${esc(sub.nombre)}</h2>`;
+      dePlatos.forEach(p => {
+        (p.alergenos||[]).forEach(a => usados.add(a));
+        cuerpo += `<div class="plato">
+          ${fotos[p.id] ? `<img class="foto" src="${fotos[p.id]}" alt="">` : ""}
+          <div class="cuerpo">
+            <div class="fila1">
+              <div>
+                <div class="nombre">${esc(p.nombre)}</div>
+                ${p.nombreEn ? `<div class="en">${esc(p.nombreEn)}</div>` : ""}
+              </div>
+              ${p.precio ? `<div class="precio">${esc(p.precio)}</div>` : ""}
+            </div>
+            ${p.descripcion ? `<div class="desc">${esc(p.descripcion)}</div>` : ""}
+            <div class="chips">${chips(p)}</div>
+          </div>
+        </div>`;
+      });
+      cuerpo += `</div>`;
+    });
+  });
+  if (!cuerpo) cuerpo = `<div class="vacio">Ningún plato coincide con la búsqueda.</div>`;
+
+  const leyenda = usados.size ? `<div class="leyenda-final">
+    <div class="t">Alérgenos (Reglamento UE 1169/2011)</div>
+    <div class="items">${[...usados].map(a => AL_MAP[a] ? `<div>${AL_MAP[a].icono} ${esc(AL_MAP[a].nombre)}</div>` : "").join("")}</div>
+  </div>` : "";
+
+  cont.innerHTML = tabs + controles + cuerpo + leyenda +
+    `<div class="pie">La información sobre alérgenos es orientativa. Si tiene alguna alergia o intolerancia, consulte a nuestro personal antes de pedir.</div>`;
+
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { seccion = b.dataset.sec; render(); });
+  const busc = document.getElementById("busc");
+  busc.oninput = () => { busqueda = busc.value; render(); setTimeout(()=>{ const el=document.getElementById("busc"); if(el){el.focus(); el.setSelectionRange(el.value.length,el.value.length);} },0); };
+  document.getElementById("filAl").onchange = e => { filtroAl = e.target.value; render(); };
+}
+</script>
+</body>
+</html>
