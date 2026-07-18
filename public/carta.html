@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nuestra carta</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Inter:wght@400;500&display=swap');
 :root{
   --crema:#FFFFFF; --crema-2:#FFFFFF; --tinta:#2A2A2A; --teja:#B4552D; --teja-osc:#8F3F1E;
   --tierra:#7A5C3E; --dorado:#C8893B; --linea:#E6DAC8; --carta:#FFFFFF; --suave:#8A7357;
 }
 *{box-sizing:border-box;}
 body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--crema);color:var(--tinta);min-height:100vh;}
-.display{font-family:'Cormorant Garamond',Georgia,serif;}
+.display{font-family:'Montserrat',system-ui,sans-serif;}
 header{background:linear-gradient(160deg,#8F3F1E,#B4552D);color:#fff;padding:30px 20px 26px;text-align:center;}
 header .logo{max-height:96px;max-width:78%;object-fit:contain;margin-bottom:6px;
   background:#fff;padding:12px 18px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.18);}
-header h1{font-family:'Cormorant Garamond',Georgia,serif;font-size:30px;font-weight:700;margin:10px 0 0;}
+header h1{font-family:'Montserrat',system-ui,sans-serif;font-size:26px;font-weight:600;letter-spacing:.04em;margin:10px 0 0;}
 header .sub{font-size:13.5px;opacity:.9;margin-top:5px;letter-spacing:.02em;}
 main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
 .tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 0 8px;position:sticky;top:0;background:var(--crema);z-index:5;}
@@ -31,25 +31,24 @@ main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
   font-family:inherit;background:#fff;color:var(--tinta);outline:none;}
 .aviso-filtro{font-size:13px;color:var(--suave);margin:4px 2px 0;}
 .grupo-sec{margin-top:28px;}
-.grupo-sec h2{font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--teja);text-align:center;margin:0 0 4px;}
-.grupo-sec h2::after{content:"";display:block;width:44px;height:3px;background:var(--dorado);margin:9px auto 18px;border-radius:2px;}
+.grupo-sec h2{font-family:'Montserrat',system-ui,sans-serif;font-size:19px;font-weight:500;letter-spacing:.22em;
+  text-transform:uppercase;color:#2a2a2a;text-align:left;margin:0 0 14px;display:flex;align-items:center;gap:16px;}
+.grupo-sec h2::after{content:"";flex:1;height:1px;background:#C9A96A;}
 /* Estilo carta elegante: texto a la izquierda, foto pequena a la derecha */
 .plato{background:transparent;border:none;border-bottom:1px solid #ECECEC;border-radius:0;margin:0;
   padding:16px 2px;display:flex;align-items:flex-start;gap:16px;box-shadow:none;}
 .plato .texto{flex:1;min-width:0;}
-.plato .nombre{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:700;letter-spacing:.02em;
-  text-transform:uppercase;display:inline-block;border-bottom:1px solid #B8B8B8;padding-bottom:3px;line-height:1.25;color:#1f1f1f;}
-.plato .en{font-size:13px;color:#333;font-style:normal;margin-top:4px;text-transform:none;}
-.plato .desc{font-size:13px;color:#555;margin-top:5px;line-height:1.45;}
+.plato .nombre{font-family:'Montserrat',system-ui,sans-serif;font-size:14px;font-weight:600;letter-spacing:.03em;
+  text-transform:uppercase;display:inline-block;border-bottom:1px solid #C4C4C4;padding-bottom:2px;line-height:1.3;color:#2a2a2a;}
+.plato .en{font-size:11.5px;color:#444;font-style:normal;margin-top:3px;text-transform:none;}
+.plato .desc{font-size:11.5px;color:#666;margin-top:4px;line-height:1.4;}
 .plato .fila-baja{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:9px;}
 .chips{display:flex;flex-wrap:wrap;gap:7px;}
-.chip{width:30px;height:30px;border-radius:50%;background:#F3E2C8;border:1.5px solid #C89A5B;
-  display:inline-flex;align-items:center;justify-content:center;font-size:16px;padding:0;
-  box-shadow:0 1px 2px rgba(0,0,0,.08);}
+.chip{width:26px;height:26px;border-radius:50%;background:#EFEFEF;border:1.5px solid #9a9a9a;
+  display:inline-flex;align-items:center;justify-content:center;font-size:14px;padding:0;filter:grayscale(1);}
 .chip.ok{width:auto;height:auto;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;
   background:#E7EFE0;border-color:#CADBBA;color:#4F6B33;}
-.plato .precio{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-weight:700;color:var(--teja);white-space:nowrap;}
+.plato .precio{font-family:'Montserrat',system-ui,sans-serif;font-size:13px;font-weight:600;color:var(--teja);white-space:nowrap;}
 .plato .foto-mini{width:96px;height:96px;flex-shrink:0;border-radius:10px;background:#151515;overflow:hidden;
   display:flex;align-items:center;justify-content:center;}
 .plato .foto-mini img{max-width:100%;max-height:100%;object-fit:contain;}
@@ -74,14 +73,14 @@ main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
 .modal-detalle .foto-top{width:100%;height:220px;background:#151515;display:flex;align-items:center;justify-content:center;}
 .modal-detalle .foto-top img{max-width:100%;max-height:100%;object-fit:contain;}
 .modal-detalle .md-cuerpo{padding:20px 22px 22px;}
-.modal-detalle .md-nombre{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;font-weight:700;line-height:1.2;}
+.modal-detalle .md-nombre{font-family:'Montserrat',system-ui,sans-serif;font-size:18px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;line-height:1.25;}
 .modal-detalle .md-en{font-size:13px;color:var(--suave);font-style:italic;margin-top:3px;}
-.modal-detalle .md-precio{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;font-weight:700;color:var(--teja);margin-top:8px;}
+.modal-detalle .md-precio{font-family:'Montserrat',system-ui,sans-serif;font-size:16px;font-weight:600;color:var(--teja);margin-top:8px;}
 .modal-detalle .md-tit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin:18px 0 6px;}
 .modal-detalle .md-desc{font-size:14px;color:var(--tierra);line-height:1.5;}
 .modal-detalle .md-alergenos{display:flex;flex-wrap:wrap;gap:6px;}
-.modal-detalle .md-al{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;padding:5px 12px;
-  border-radius:999px;background:#F3E2C8;border:1.5px solid #C89A5B;color:#7A4E15;}
+.modal-detalle .md-al{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;padding:5px 12px;
+  border-radius:999px;background:#F0F0F0;border:1.5px solid #9a9a9a;color:#333;}
 .modal-detalle .md-al.ok{background:#E7EFE0;border-color:#CADBBA;color:#4F6B33;}
 .modal-detalle .md-cerrar{width:100%;margin-top:20px;background:var(--teja);color:#fff;border:none;
   border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
