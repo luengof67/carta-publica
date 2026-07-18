@@ -34,22 +34,31 @@ main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
 .grupo-sec h2{font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--teja);text-align:center;margin:0 0 4px;}
 .grupo-sec h2::after{content:"";display:block;width:44px;height:3px;background:var(--dorado);margin:9px auto 18px;border-radius:2px;}
-/* Estilo lista compacta: foto cuadrada (entera) a la izquierda, texto a la derecha */
-.plato{background:var(--carta);border:1px solid var(--linea);border-radius:14px;margin-bottom:10px;overflow:hidden;
-  box-shadow:0 2px 8px rgba(122,92,62,.07);display:flex;align-items:stretch;}
-.plato .foto-caja{width:112px;flex-shrink:0;background:#F0E7D8;display:flex;align-items:center;justify-content:center;padding:6px;}
-.plato .foto{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:8px;display:block;}
-.plato .cuerpo{padding:11px 14px 12px;flex:1;min-width:0;}
-.plato .fila1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-.plato .nombre{font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:600;line-height:1.2;}
-.plato .en{font-size:12px;color:var(--suave);font-style:italic;margin-top:1px;}
-.plato .precio{font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:700;color:var(--teja);white-space:nowrap;}
-.plato .desc{font-size:12.5px;color:var(--tierra);margin-top:4px;line-height:1.4;}
-.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
-.chip{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:600;padding:2px 8px;
-  border-radius:999px;background:#F4E6D4;border:1px solid #E4CBA8;color:#8A5A22;}
-.chip.ok{background:#E7EFE0;border-color:#CADBBA;color:#4F6B33;}
-.plato.sin-foto-plato .foto-caja{display:none;}
+/* Estilo carta elegante: texto a la izquierda, foto pequena a la derecha */
+.plato{background:transparent;border:none;border-bottom:1px solid var(--linea);border-radius:0;margin:0;
+  padding:16px 2px;display:flex;align-items:flex-start;gap:16px;box-shadow:none;}
+.plato .texto{flex:1;min-width:0;}
+.plato .nombre{font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:600;letter-spacing:.02em;
+  text-transform:uppercase;display:inline-block;border-bottom:1px solid #D9CBB6;padding-bottom:2px;line-height:1.3;}
+.plato .en{font-size:12.5px;color:var(--suave);font-style:italic;margin-top:3px;}
+.plato .desc{font-size:13px;color:var(--tierra);margin-top:5px;line-height:1.45;}
+.plato .fila-baja{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;margin-top:9px;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{width:24px;height:24px;border-radius:50%;background:#F4E6D4;border:1px solid #E4CBA8;
+  display:inline-flex;align-items:center;justify-content:center;font-size:13px;padding:0;}
+.chip.ok{width:auto;height:auto;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600;
+  background:#E7EFE0;border-color:#CADBBA;color:#4F6B33;}
+.plato .precio{font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:var(--teja);white-space:nowrap;}
+.plato .foto-mini{width:96px;height:96px;flex-shrink:0;border-radius:10px;background:#151515;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;}
+.plato .foto-mini img{max-width:100%;max-height:100%;object-fit:contain;}
+/* Plato destacado: foto grande a lo ancho */
+.plato.destacado{flex-direction:column;gap:0;}
+.plato.destacado .foto-grande{width:100%;height:240px;background:#151515;border-radius:12px;overflow:hidden;
+  margin-bottom:12px;display:flex;align-items:center;justify-content:center;}
+.plato.destacado .foto-grande img{max-width:100%;max-height:100%;object-fit:contain;}
+.plato.destacado .texto{width:100%;}
+.plato.sin-foto-plato{}
 .cargando, .vacio{text-align:center;color:var(--suave);padding:50px 20px;font-size:15px;}
 .pie{text-align:center;font-size:12.5px;color:var(--suave);margin-top:34px;padding-top:18px;border-top:1px solid var(--linea);line-height:1.6;}
 .leyenda-final{margin-top:26px;background:#fff;border:1px solid var(--linea);border-radius:14px;padding:16px 18px;}
@@ -197,20 +206,23 @@ function render(){
       dePlatos.forEach(p => {
         (p.alergenos||[]).forEach(a => usados.add(a));
         const tieneFoto = !!fotos[p.id];
-        cuerpo += `<div class="plato${tieneFoto ? "" : " sin-foto-plato"}">
-          ${tieneFoto ? `<div class="foto-caja"><img class="foto" src="${fotos[p.id]}" alt=""></div>` : ""}
-          <div class="cuerpo">
-            <div class="fila1">
-              <div>
-                <div class="nombre">${esc(p.nombre)}</div>
-                ${p.nombreEn ? `<div class="en">${esc(p.nombreEn)}</div>` : ""}
-              </div>
-              ${p.precio ? `<div class="precio">${esc(p.precio)}</div>` : ""}
-            </div>
+        const bloqueTexto = `<div class="texto">
+            <div class="nombre">${esc(p.nombre)}</div>
+            ${p.nombreEn ? `<div class="en">${esc(p.nombreEn)}</div>` : ""}
             ${p.descripcion ? `<div class="desc">${esc(p.descripcion)}</div>` : ""}
-            <div class="chips">${chips(p)}</div>
-          </div>
-        </div>`;
+            <div class="fila-baja"><div class="chips">${chips(p)}</div>${p.precio ? `<div class="precio">${esc(p.precio)}</div>` : ""}</div>
+          </div>`;
+        if (p.destacado && tieneFoto){
+          cuerpo += `<div class="plato destacado">
+            <div class="foto-grande"><img src="${fotos[p.id]}" alt=""></div>
+            ${bloqueTexto}
+          </div>`;
+        } else {
+          cuerpo += `<div class="plato${tieneFoto ? "" : " sin-foto-plato"}">
+            ${bloqueTexto}
+            ${tieneFoto ? `<div class="foto-mini"><img src="${fotos[p.id]}" alt=""></div>` : ""}
+          </div>`;
+        }
       });
       cuerpo += `</div>`;
     });
