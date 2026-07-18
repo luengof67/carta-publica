@@ -64,6 +64,26 @@ main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
 .leyenda-final{margin-top:26px;background:#fff;border:1px solid var(--linea);border-radius:14px;padding:16px 18px;}
 .leyenda-final .t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin-bottom:10px;}
 .leyenda-final .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 12px;font-size:13px;}
+
+/* Modal de detalle al tocar un plato */
+.plato{cursor:pointer;}
+.velo{position:fixed;inset:0;background:rgba(58,42,32,.55);z-index:50;display:flex;
+  align-items:center;justify-content:center;padding:16px;}
+.modal-detalle{background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;}
+.modal-detalle .foto-top{width:100%;height:220px;background:#151515;display:flex;align-items:center;justify-content:center;}
+.modal-detalle .foto-top img{max-width:100%;max-height:100%;object-fit:contain;}
+.modal-detalle .md-cuerpo{padding:20px 22px 22px;}
+.modal-detalle .md-nombre{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:700;line-height:1.2;}
+.modal-detalle .md-en{font-size:13px;color:var(--suave);font-style:italic;margin-top:3px;}
+.modal-detalle .md-precio{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:700;color:var(--teja);margin-top:8px;}
+.modal-detalle .md-tit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--suave);margin:18px 0 6px;}
+.modal-detalle .md-desc{font-size:14px;color:var(--tierra);line-height:1.5;}
+.modal-detalle .md-alergenos{display:flex;flex-wrap:wrap;gap:6px;}
+.modal-detalle .md-al{display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:600;padding:4px 11px;
+  border-radius:999px;background:#F4E6D4;border:1px solid #E4CBA8;color:#8A5A22;}
+.modal-detalle .md-al.ok{background:#E7EFE0;border-color:#CADBBA;color:#4F6B33;}
+.modal-detalle .md-cerrar{width:100%;margin-top:20px;background:var(--teja);color:#fff;border:none;
+  border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;}
 </style>
 </head>
 <body>
@@ -78,6 +98,7 @@ main{max-width:860px;margin:0 auto;padding:14px 16px 50px;}
 <main>
   <div id="contenido"><div class="cargando">Cargando la carta…</div></div>
 </main>
+<div id="capaModal"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -168,8 +189,8 @@ function platosFiltrados(){
 }
 function chips(p){
   const al = p.alergenos || [];
-  if (al.length === 0) return `<span class="chip ok">✓ Sin alérgenos declarados</span>`;
-  return al.map(a => AL_MAP[a] ? `<span class="chip">${AL_MAP[a].icono} ${esc(AL_MAP[a].nombre)}</span>` : "").join("");
+  if (al.length === 0) return `<span class="chip ok">✓ Sin alérgenos</span>`;
+  return al.map(a => AL_MAP[a] ? `<span class="chip" title="${esc(AL_MAP[a].nombre)}">${AL_MAP[a].icono}</span>` : "").join("");
 }
 
 function render(){
@@ -213,12 +234,12 @@ function render(){
             <div class="fila-baja"><div class="chips">${chips(p)}</div>${p.precio ? `<div class="precio">${esc(p.precio)}</div>` : ""}</div>
           </div>`;
         if (p.destacado && tieneFoto){
-          cuerpo += `<div class="plato destacado">
+          cuerpo += `<div class="plato destacado" data-id="${p.id}">
             <div class="foto-grande"><img src="${fotos[p.id]}" alt=""></div>
             ${bloqueTexto}
           </div>`;
         } else {
-          cuerpo += `<div class="plato${tieneFoto ? "" : " sin-foto-plato"}">
+          cuerpo += `<div class="plato${tieneFoto ? "" : " sin-foto-plato"}" data-id="${p.id}">
             ${bloqueTexto}
             ${tieneFoto ? `<div class="foto-mini"><img src="${fotos[p.id]}" alt=""></div>` : ""}
           </div>`;
@@ -241,6 +262,34 @@ function render(){
   const busc = document.getElementById("busc");
   busc.oninput = () => { busqueda = busc.value; render(); setTimeout(()=>{ const el=document.getElementById("busc"); if(el){el.focus(); el.setSelectionRange(el.value.length,el.value.length);} },0); };
   document.getElementById("filAl").onchange = e => { filtroAl = e.target.value; render(); };
+  document.querySelectorAll(".plato[data-id]").forEach(el => el.onclick = () => abrirDetalle(el.dataset.id));
+}
+
+function abrirDetalle(id){
+  const p = platos.find(x => x.id === id); if (!p) return;
+  const foto = fotos[id];
+  const al = p.alergenos || [];
+  const alergenosHtml = al.length === 0
+    ? `<span class="md-al ok">✓ Sin alérgenos declarados</span>`
+    : al.map(a => AL_MAP[a] ? `<span class="md-al">${AL_MAP[a].icono} ${esc(AL_MAP[a].nombre)}</span>` : "").join("");
+  const capa = document.getElementById("capaModal");
+  capa.innerHTML = `<div class="velo" id="veloDet">
+    <div class="modal-detalle" onclick="event.stopPropagation()">
+      ${foto ? `<div class="foto-top"><img src="${foto}" alt=""></div>` : ""}
+      <div class="md-cuerpo">
+        <div class="md-nombre">${esc(p.nombre)}</div>
+        ${p.nombreEn ? `<div class="md-en">${esc(p.nombreEn)}</div>` : ""}
+        ${p.precio ? `<div class="md-precio">${esc(p.precio)}</div>` : ""}
+        ${p.descripcion ? `<div class="md-tit">Descripción</div><div class="md-desc">${esc(p.descripcion)}</div>` : ""}
+        ${(p.ingredientes && p.ingredientes.length) ? `<div class="md-tit">Ingredientes</div><div class="md-desc">${esc(p.ingredientes.join(", "))}</div>` : ""}
+        <div class="md-tit">Alérgenos</div>
+        <div class="md-alergenos">${alergenosHtml}</div>
+        <button class="md-cerrar" id="detCerrar">Cerrar</button>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById("veloDet").onclick = () => capa.innerHTML = "";
+  document.getElementById("detCerrar").onclick = () => capa.innerHTML = "";
 }
 </script>
 </body>
