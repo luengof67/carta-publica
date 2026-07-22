@@ -136,7 +136,10 @@ const SECCIONES = [
   { id:"experiencias", nombre:"Experiencias", sub:[
     {id:"menus_esp",nombre:"Menús especiales"},{id:"catas",nombre:"Catas maridadas"},{id:"cocteles",nombre:"Cócteles"}]},
   { id:"cafeteria", nombre:"Cafetería", sub:[
-    {id:"desayunos",nombre:"Desayunos"},{id:"bocadillos",nombre:"Bocadillos"},{id:"raciones",nombre:"Raciones"},{id:"postres_cafe",nombre:"Postres"},{id:"bebidas",nombre:"Bebidas"}]},
+    {id:"sandwiches",nombre:"Sándwiches"},{id:"hamburguesas",nombre:"Hamburguesas"},{id:"tostas",nombre:"Tostas"},
+    {id:"bocadillos",nombre:"Bocadillos"},{id:"pizzas",nombre:"Pizzas"},{id:"bowls",nombre:"Bowls"},
+    {id:"combinados",nombre:"Platos combinados"},{id:"raciones",nombre:"Otras raciones"},
+    {id:"pescados_cafe",nombre:"Pescados"},{id:"carnes_cafe",nombre:"Carnes"},{id:"postres_cafe",nombre:"Postres"}]},
 ];
 const SUB_A_PRINCIPAL = {}, NOMBRE_SUB = {};
 SECCIONES.forEach(s => s.sub.forEach(sub => { SUB_A_PRINCIPAL[sub.id]=s; NOMBRE_SUB[sub.id]=sub.nombre; }));
