@@ -135,6 +135,8 @@ const SECCIONES = [
     {id:"tapas_barra",nombre:"Tapas de barra"},{id:"tapas_esp",nombre:"Tapas especiales"}]},
   { id:"experiencias", nombre:"Experiencias", sub:[
     {id:"menus_esp",nombre:"Menús especiales"},{id:"catas",nombre:"Catas maridadas"},{id:"cocteles",nombre:"Cócteles"}]},
+  { id:"eventos", nombre:"Eventos", oculta:true, sub:[
+    {id:"menus_grupo",nombre:"Menús de grupo"},{id:"cocteles_evento",nombre:"Cócteles"}]},
   { id:"cafeteria", nombre:"Cafetería", sub:[
     {id:"sandwiches",nombre:"Sándwiches"},{id:"hamburguesas",nombre:"Hamburguesas"},{id:"tostas",nombre:"Tostas"},
     {id:"bocadillos",nombre:"Bocadillos"},{id:"pizzas",nombre:"Pizzas"},{id:"bowls",nombre:"Bowls"},
@@ -195,11 +197,12 @@ onSnapshot(doc(db, base + "/config/carta"), snap => {
 }, ()=>{});
 
 function seccionesConPlatos(){
-  return SECCIONES.filter(s => platos.some(p => p.publico && SUB_A_PRINCIPAL[p.subseccion]?.id === s.id));
+  return SECCIONES.filter(s => !s.oculta && platos.some(p => p.publico && SUB_A_PRINCIPAL[p.subseccion]?.id === s.id));
 }
 function platosFiltrados(){
   return platos.filter(p => {
     if (!p.publico) return false;
+    if (SUB_A_PRINCIPAL[p.subseccion]?.oculta) return false; /* nunca mostrar secciones ocultas (ej. Eventos) */
     if (seccion !== "todas" && SUB_A_PRINCIPAL[p.subseccion]?.id !== seccion) return false;
     if (filtroAl && (p.alergenos||[]).includes(filtroAl)) return false;
     if (busqueda){
